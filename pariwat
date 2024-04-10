@@ -1,0 +1,63 @@
+mkdir food-recipe-app
+cd food-recipe-app
+npm init -y
+npm install express body-parser
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// Dummy data for food recipes
+const recipes = [
+    { id: 1, name: 'Spaghetti Carbonara', ingredients: ['spaghetti', 'eggs', 'pancetta', 'parmesan cheese', 'black pepper'] },
+    { id: 2, name: 'Chicken Tikka Masala', ingredients: ['chicken', 'yogurt', 'tomato sauce', 'spices', 'cream'] },
+    // Add more recipes here
+];
+
+// Routes
+app.get('/recipes', (req, res) => {
+    res.json(recipes);
+});
+
+// Start server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+mkdir public
+cd public
+touch index.html style.css script.js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Recipe App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Food Recipe App</h1>
+    <div id="recipeList"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('/recipes')
+        .then(response => response.json())
+        .then(recipes => {
+            const recipeList = document.getElementById('recipeList');
+            recipes.forEach(recipe => {
+                const recipeElement = document.createElement('div');
+                recipeElement.innerHTML = `
+                    <h2>${recipe.name}</h2>
+                    <ul>
+                        ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+                    </ul>
+                `;
+                recipeList.appendChild(recipeElement);
+            });
+        })
+        .catch(error => console.error('Error fetching recipes:', error));
+});
